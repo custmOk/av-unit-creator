@@ -32,8 +32,9 @@ export const RichInput: React.FC<Props> = ({
             category: 'Title',
             items: [
                 { label: 'Changed Value', color: '#30C23D' },
-                { label: 'PvP Only', color: '#30C23D' },
+                { label: "Conditional", color: '#6BF5FA' },
                 { label: "When 'x' Happens", color: '#FF7B1C' },
+                { label: 'PvP Only', color: '#30C23D' },
             ],
         },
         {
