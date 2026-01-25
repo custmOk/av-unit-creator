@@ -26,7 +26,6 @@ export const RichInput: React.FC<Props> = ({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     // --- 1. DEFINED PALETTE ---
-    // You can let users edit this list too if you want!
     const [groups] = useState<PresetGroup[]>([
         {
             category: 'Title',
@@ -106,7 +105,7 @@ export const RichInput: React.FC<Props> = ({
 
         onChange(newValue);
 
-        // Optional: Restore focus
+        // Restore focus
         setTimeout(() => textarea.focus(), 0);
     };
 

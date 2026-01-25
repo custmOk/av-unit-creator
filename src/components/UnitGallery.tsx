@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import type { Unit } from '../types';
+import type { Unit, Rarity } from '../types';
 import { UnitCard } from './UnitCard';
+
+const RARITY_WEIGHTS: Record<string, number> = {
+    'Vanguard': 7,
+    'Secret': 6,
+    'Exclusive': 5,
+    'Mythic': 4,
+    'Legendary': 3,
+    'Epic': 2,
+    'Rare': 1,
+};
 
 export const UnitGallery = () => {
     const [units, setUnits] = useState<Unit[]>([]);
@@ -17,7 +27,6 @@ export const UnitGallery = () => {
         const { data, error } = await supabase
             .from('units')
             .select('*')
-            .order('created_at', { ascending: false }); // Newest first
 
         if (error) {
             console.error('Error fetching units:', error);
@@ -28,12 +37,23 @@ export const UnitGallery = () => {
                 id: row.id,
                 name: row.name,
                 hp: row.hp,
-                rarity: row.rarity,
+                rarity: row.rarity as Rarity,
                 imageUrl: row.image_url, // Map image_url -> imageUrl
                 passives: row.passives,
                 actives: row.actives,
                 customKeywords: row.custom_keywords, // If you added this column too
             }));
+
+            formattedUnits.sort((a, b) => {
+                const weightA = RARITY_WEIGHTS[a.rarity] || 0;
+                const weightB = RARITY_WEIGHTS[b.rarity] || 0;
+
+                if (weightA !== weightB) {
+                    return weightB - weightA
+                }
+
+                return a.name.localeCompare(b.name);
+            })
 
             setUnits(formattedUnits);
         }
@@ -59,6 +79,10 @@ export const UnitGallery = () => {
                     }
                 />
             ))}
+
+            {units.length === 0 && (
+                <div className="text-gray-500 italic">No units found in database.</div>
+            )}
         </div>
     );
 };
