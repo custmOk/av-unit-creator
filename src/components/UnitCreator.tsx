@@ -75,11 +75,13 @@ export const UnitCreator = () => {
         // Create a local URL for the preview immediately
         const previewUrl = URL.createObjectURL(tempActive.file);
 
+        const descriptionArray = tempActive.desc.split('\n').map(line => line.trim()).filter(line => line !== '');
+
         setActives([
             ...actives,
             {
                 name: tempActive.name,
-                description: tempActive.desc,
+                description: descriptionArray,
                 cooldown: parseInt(tempActive.cd),
                 iconUrl: previewUrl,
                 file: tempActive.file,
@@ -300,13 +302,18 @@ export const UnitCreator = () => {
                                     })
                                 }
                             />
-                            <RichInput
-                                value={tempActive.desc}
-                                onChange={(val) =>
-                                    setTempActive({ ...tempActive, desc: val })
-                                }
-                                placeholder="Active Description (Highlight words to color them)"
-                            />
+                            <div>
+                                <RichInput
+                                    value={tempActive.desc}
+                                    onChange={(val) =>
+                                        setTempActive({ ...tempActive, desc: val })
+                                    }
+                                    placeholder="Active Description (Highlight words to color them)"
+                                />
+                                <span className="text-[10px] text-gray-500 block mt-1">
+                                    Separate distinct effects with a new line.
+                                </span>
+                            </div>
                             <button
                                 type="button"
                                 onClick={addActive}

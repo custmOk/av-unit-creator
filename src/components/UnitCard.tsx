@@ -115,6 +115,8 @@ const ActiveSlot = ({
     index: number;
     isVisible: boolean;
 }) => {
+    const lines = Array.isArray(ability.description) ? ability.description : [ability.description];
+
     return (
         <div
             className={`
@@ -136,9 +138,20 @@ const ActiveSlot = ({
                 <h4 className="font-bold text-blue-400 text-sm">
                     {ability.name}
                 </h4>
-                <p className="text-xs text-gray-300 my-2 leading-relaxed">
-                    <RichTextParser text={ability.description} />
-                </p>
+                {/* Description List */}
+                <div className="space-y-1 mb-2">
+                {lines.map((line: string, i: number) => (
+                    <div key={i} className="flex items-start text-xs text-gray-300 leading-relaxed">
+                    {/* Only show bullet point if there is more than 1 line, looks cleaner */}
+                    {lines.length > 1 && (
+                        <span className="mr-2 text-blue-500 mt-0.5">•</span>
+                    )}
+                        <span>
+                            <RichTextParser text={line} />
+                        </span>
+                    </div>
+                ))}
+                </div>
                 <span className="inline-block bg-blue-900/50 text-blue-200 text-[10px] px-2 py-0.5 rounded border border-blue-500/30">
                     🕒 {ability.cooldown}s Cooldown
                 </span>

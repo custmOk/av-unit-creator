@@ -7,7 +7,7 @@ export interface PassiveAbility {
 
 export interface ActiveAbility {
     name: string;
-    description: string;
+    description: string[];
     cooldown: number;
     iconUrl: string;
 }
