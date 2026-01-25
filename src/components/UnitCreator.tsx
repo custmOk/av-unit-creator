@@ -60,7 +60,7 @@ export const UnitCreator = () => {
     const [isUploading, setIsUploading] = useState(false);
 
     const uploadFile = async (file: File, path: string) => {
-        const { data, error } = await supabase.storage.from('unit-images').upload(path, file);
+        const { error } = await supabase.storage.from('unit-images').upload(path, file);
 
         if (error) throw error;
 
