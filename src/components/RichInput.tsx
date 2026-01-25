@@ -34,6 +34,7 @@ export const RichInput: React.FC<Props> = ({
                 { label: "Conditional", color: '#6BF5FA' },
                 { label: "When 'x' Happens", color: '#FF7B1C' },
                 { label: 'PvP Only', color: '#30C23D' },
+                { label: 'References', color: '#0BADFF' }
             ],
         },
         {
