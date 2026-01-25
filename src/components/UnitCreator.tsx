@@ -170,13 +170,13 @@ export const UnitCreator = () => {
                         onChange={(e) => setRarity(e.target.value as Rarity)}
                         className="w-full mt-1 bg-gray-900 text-white p-2 rounded border border-gray-600 outline-none focus:border-blue-500"
                     >
-                        <option value="Rare">Rare</option>
-                        <option value="Epic">Epic</option>
-                        <option value="Legendary">Legendary</option>
-                        <option value="Mythic">Mythic</option>
-                        <option value="Exclusive">Exclusive</option>
-                        <option value="Secret">Secret</option>
                         <option value="Vanguard">Vanguard</option>
+                        <option value="Secret">Secret</option>
+                        <option value="Exclusive">Exclusive</option>
+                        <option value="Mythic">Mythic</option>
+                        <option value="Legendary">Legendary</option>
+                        <option value="Epic">Epic</option>
+                        <option value="Rare">Rare</option>
                     </select>
                 </div>
 
