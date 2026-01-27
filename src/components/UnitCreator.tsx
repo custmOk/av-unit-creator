@@ -177,7 +177,7 @@ export const UnitCreator = () => {
                     Unit Factory
                 </h2>
 
-                {/* Core Stats */}
+                {/* --- Name --- */}
                 <div className="mb-6">
                     <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">
                         Unit Name
@@ -191,15 +191,15 @@ export const UnitCreator = () => {
                     />
                 </div>
 
-                {/* --- NEW: CATEGORY INPUT --- */}
-                <div className="mb-6">
+                {/* --- Category --- */}
+                <div className="mb-5">
                     <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">
                         Unit Category
                     </label>
                     <div className="relative">
                         <input
                             type="text"
-                            list="category-suggestions" // Connects to the datalist below
+                            list="category-suggestions"
                             className="w-full bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-blue-500 outline-none"
                             placeholder="Unit Category"
                             value={category}
@@ -218,10 +218,10 @@ export const UnitCreator = () => {
                     </p>
                 </div>
 
-                {/* Rarity Selector Row */}
+                {/* --- Rarity --- */}
                 <div className="mb-6">
-                    <label className="text-xs text-gray-400 uppercase tracking-wider font-bold">
-                        Rarity
+                    <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">
+                        Unit Category
                     </label>
                     <select
                         value={rarity}
@@ -238,9 +238,9 @@ export const UnitCreator = () => {
                     </select>
                 </div>
 
-                {/* Image Upload */}
+                {/* --- Image Upload --- */}
                 <div className="mb-6 pb-6 border-b border-gray-700">
-                    <label className="text-xs text-gray-400 uppercase tracking-wider font-bold">
+                    <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">
                         Unit Image
                     </label>
                     <input
@@ -260,7 +260,7 @@ export const UnitCreator = () => {
                     />
                 </div>
 
-                {/* Ability Tabs */}
+                {/* --- Ability Tabs --- */}
                 <div className="flex mb-4 border-b border-gray-700">
                     <button
                         type="button"
@@ -278,7 +278,7 @@ export const UnitCreator = () => {
                     </button>
                 </div>
 
-                {/* Ability Inputs */}
+                {/* --- Ability Inputs --- */}
                 <div className="bg-gray-900 p-4 rounded mb-6">
                     {activeTab === 'passive' ? (
                         <div className="space-y-4">
@@ -297,7 +297,7 @@ export const UnitCreator = () => {
                                 }
                             />
 
-                            {/* 2. PASSIVE DESCRIPTION (Auto-colors numbers) */}
+                            {/* --- Passive Description --- */}
                             <div>
                                 <label className="text-xs text-gray-500 font-bold ml-1">
                                     Description
@@ -398,16 +398,15 @@ export const UnitCreator = () => {
                 </button>
             </form>
 
-            {/* --- RIGHT: LIVE PREVIEW --- */}
+            {/* --- Live Preview --- */}
             <div className="hidden lg:block sticky top-6 h-fit">
                 <h3 className="text-gray-500 uppercase tracking-widest text-xs mb-4">
                     Live Preview
                 </h3>
                 <div className="transform scale-90 origin-top-left">
                     <UnitCard
-                        // We force it to be selected so the user can see their edits live
                         isSelected={true}
-                        onSelect={() => {}} // Do nothing on click in preview
+                        onSelect={() => {}}
                         unit={{
                             id: 'preview',
                             name: name || 'Unit Name',
