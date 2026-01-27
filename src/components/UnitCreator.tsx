@@ -25,7 +25,7 @@ export const UnitCreator = () => {
             const unique = [...new Set(data.map((u: any) => u.category))];
             setExistingCategories(unique);
         }
-    }
+    };
 
     const [passives, setPassives] = useState<PassiveAbility[]>([]);
     const [actives, setActives] = useState<(ActiveAbility & { file?: File })[]>(
@@ -76,11 +76,15 @@ export const UnitCreator = () => {
     const [isUploading, setIsUploading] = useState(false);
 
     const uploadFile = async (file: File, path: string) => {
-        const { error } = await supabase.storage.from('unit-images').upload(path, file);
+        const { error } = await supabase.storage
+            .from('unit-images')
+            .upload(path, file);
 
         if (error) throw error;
 
-        const { data: publicUrlData } = supabase.storage.from('unit-images').getPublicUrl(path);
+        const { data: publicUrlData } = supabase.storage
+            .from('unit-images')
+            .getPublicUrl(path);
 
         return publicUrlData.publicUrl;
     };
@@ -91,7 +95,10 @@ export const UnitCreator = () => {
         // Create a local URL for the preview immediately
         const previewUrl = URL.createObjectURL(tempActive.file);
 
-        const descriptionArray = tempActive.desc.split('\n').map(line => line.trim()).filter(line => line !== '');
+        const descriptionArray = tempActive.desc
+            .split('\n')
+            .map((line) => line.trim())
+            .filter((line) => line !== '');
 
         setActives([
             ...actives,
@@ -109,7 +116,7 @@ export const UnitCreator = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!mainImage) return alert("Please select a main unit image!");
+        if (!mainImage) return alert('Please select a main unit image!');
 
         setIsUploading(true);
 
@@ -119,21 +126,23 @@ export const UnitCreator = () => {
             const mainImagePath = `units/${timestamp}_${mainImage.name}`;
             const mainImageUrl = await uploadFile(mainImage, mainImagePath);
 
-            const finalActives = await Promise.all(actives.map(async (ability) => {
-                let iconUrl = ability.iconUrl;
+            const finalActives = await Promise.all(
+                actives.map(async (ability) => {
+                    let iconUrl = ability.iconUrl;
 
-                if (ability.file) {
-                    const iconPath = `icons/${timestamp}_${ability.name}_${ability.file.name}`;
-                    iconUrl = await uploadFile(ability.file, iconPath);
-                }
+                    if (ability.file) {
+                        const iconPath = `icons/${timestamp}_${ability.name}_${ability.file.name}`;
+                        iconUrl = await uploadFile(ability.file, iconPath);
+                    }
 
-                return {
-                    name: ability.name,
-                    description: ability.description,
-                    cooldown: ability.cooldown,
-                    iconUrl: iconUrl
-                };
-            }));
+                    return {
+                        name: ability.name,
+                        description: ability.description,
+                        cooldown: ability.cooldown,
+                        iconUrl: iconUrl,
+                    };
+                })
+            );
 
             const { error } = await supabase.from('units').insert([
                 {
@@ -142,16 +151,16 @@ export const UnitCreator = () => {
                     category: category,
                     image_url: mainImageUrl,
                     passives: passives,
-                    actives: finalActives
-                }
+                    actives: finalActives,
+                },
             ]);
 
             if (error) throw error;
 
-            alert("Unit Saved Successfully");
+            alert('Unit Saved Successfully');
         } catch (error) {
-            console.error("Error saving unit:", error);
-            alert("Error saving unit. Check console.");
+            console.error('Error saving unit:', error);
+            alert('Error saving unit. Check console.');
         } finally {
             setIsUploading(false);
         }
@@ -181,26 +190,29 @@ export const UnitCreator = () => {
 
                 {/* --- NEW: CATEGORY INPUT --- */}
                 <div className="mb-6">
-                <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">Unit Category</label>
-                <div className="relative">
-                    <input 
-                    type="text" 
-                    list="category-suggestions" // Connects to the datalist below
-                    className="w-full bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-blue-500 outline-none"
-                    placeholder="e.g. Mage, Tank, Boss..."
-                    value={category}
-                    onChange={e => setCategory(e.target.value)}
-                    />
-                    {/* HTML Datalist provides autocomplete suggestions based on DB data */}
-                    <datalist id="category-suggestions">
-                    {existingCategories.map(cat => (
-                        <option key={cat} value={cat} />
-                    ))}
-                    </datalist>
-                </div>
-                <p className="text-[10px] text-gray-500 mt-1">
-                    * Type a new name to create a category, or select an existing one.
-                </p>
+                    <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">
+                        Unit Category
+                    </label>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            list="category-suggestions" // Connects to the datalist below
+                            className="w-full bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-blue-500 outline-none"
+                            placeholder="Unit Category"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                        />
+                        {/* HTML Datalist provides autocomplete suggestions based on DB data */}
+                        <datalist id="category-suggestions">
+                            {existingCategories.map((cat) => (
+                                <option key={cat} value={cat} />
+                            ))}
+                        </datalist>
+                    </div>
+                    <p className="text-[10px] text-gray-500 mt-1">
+                        * Type a new name to create a category, or select an
+                        existing one.
+                    </p>
                 </div>
 
                 {/* Rarity Selector Row */}
@@ -347,7 +359,10 @@ export const UnitCreator = () => {
                                 <RichInput
                                     value={tempActive.desc}
                                     onChange={(val) =>
-                                        setTempActive({ ...tempActive, desc: val })
+                                        setTempActive({
+                                            ...tempActive,
+                                            desc: val,
+                                        })
                                     }
                                     placeholder="Active Description (Highlight words to color them)"
                                 />
@@ -371,7 +386,9 @@ export const UnitCreator = () => {
                     type="submit"
                     className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded transition-colors"
                 >
-                    {isUploading ? 'Uploading & Saving...' : 'Upload Unit to Server'}
+                    {isUploading
+                        ? 'Uploading & Saving...'
+                        : 'Upload Unit to Server'}
                 </button>
             </form>
 
