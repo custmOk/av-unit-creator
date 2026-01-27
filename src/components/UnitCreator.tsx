@@ -326,6 +326,14 @@ export const UnitCreator = () => {
                     ) : (
                         <div className="space-y-4">
                             {/* --- Active Name and Cooldown --- */}
+                            <div className="flex justify-between">
+                                <label className="text-xs text-gray-500 font-bold ml-1">
+                                    Name
+                                </label>
+                                <label className="text-xs text-gray-500 font-bold ml-1">
+                                    Cooldown
+                                </label>
+                            </div>
                             <div className="flex gap-2">
                                 <input
                                     placeholder="Active Name"
@@ -352,20 +360,28 @@ export const UnitCreator = () => {
                                 />
                             </div>
                             {/* --- Active Image Upload --- */}
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
-                                onChange={(e) =>
-                                    e.target.files &&
-                                    setTempActive({
-                                        ...tempActive,
-                                        file: e.target.files[0],
-                                    })
-                                }
-                            />
+                            <div>
+                                <label className="text-xs text-gray-500 font-bold ml-1">
+                                    Image Upload
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                                    onChange={(e) =>
+                                        e.target.files &&
+                                        setTempActive({
+                                            ...tempActive,
+                                            file: e.target.files[0],
+                                        })
+                                    }
+                                />
+                            </div>
                             {/* --- Active Description --- */}
                             <div>
+                                <label className="text-xs text-gray-500 font-bold ml-1">
+                                    Description
+                                </label>
                                 <RichInput
                                     value={tempActive.desc}
                                     onChange={(val) =>
