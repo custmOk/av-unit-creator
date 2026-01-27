@@ -178,14 +178,14 @@ export const UnitCreator = () => {
                 </h2>
 
                 {/* Core Stats */}
-                <div className="flex gap-4 mb-4">
+                <div className="mb-6">
                     <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">
                         Unit Name
                     </label>
                     <input
                         type="text"
                         placeholder="Unit Name"
-                        className="flex-1 bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-blue-500 outline-none"
+                        className="w-full bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-blue-500 outline-none"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
