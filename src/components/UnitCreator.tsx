@@ -179,6 +179,9 @@ export const UnitCreator = () => {
 
                 {/* Core Stats */}
                 <div className="flex gap-4 mb-4">
+                    <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">
+                        Unit Name
+                    </label>
                     <input
                         type="text"
                         placeholder="Unit Name"
@@ -237,7 +240,7 @@ export const UnitCreator = () => {
 
                 {/* Image Upload */}
                 <div className="mb-6 pb-6 border-b border-gray-700">
-                    <label className="block text-sm text-gray-400 mb-1">
+                    <label className="text-xs text-gray-400 uppercase tracking-wider font-bold">
                         Unit Image
                     </label>
                     <input
@@ -279,6 +282,9 @@ export const UnitCreator = () => {
                 <div className="bg-gray-900 p-4 rounded mb-6">
                     {activeTab === 'passive' ? (
                         <div className="space-y-4">
+                            <label className="text-xs text-gray-500 font-bold ml-1">
+                                Name
+                            </label>
                             <input
                                 placeholder="Passive Name"
                                 className="w-full bg-gray-800 text-white p-2 rounded text-sm border border-gray-700 focus:border-yellow-500 outline-none"
@@ -319,6 +325,14 @@ export const UnitCreator = () => {
                     ) : (
                         <div className="space-y-4">
                             <div className="flex gap-2">
+                                <div className="flex flex-row">
+                                    <label className="text-xs text-gray-500 font-bold ml-1 justify-start">
+                                        Name
+                                    </label>
+                                    <label className="text-xs text-gray-500 font-bold ml-1 justify-end">
+                                        Cooldown
+                                    </label>
+                                </div>
                                 <input
                                     placeholder="Active Name"
                                     className="flex-1 bg-gray-800 text-white p-2 rounded text-sm"
