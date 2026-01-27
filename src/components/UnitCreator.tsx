@@ -283,7 +283,7 @@ export const UnitCreator = () => {
                     {activeTab === 'passive' ? (
                         <div className="space-y-4">
                             <label className="text-xs text-gray-500 font-bold ml-1">
-                                Name
+                                Description
                             </label>
                             <input
                                 placeholder="Passive Name"
@@ -324,13 +324,7 @@ export const UnitCreator = () => {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs text-gray-500 font-bold ml-1">
-                                    Name
-                                </label>
-                                <label className="text-xs text-gray-500 font-bold ml-1">
-                                    Cooldown
-                                </label>
+                            <div className="flex gap-2">
                                 <input
                                     placeholder="Active Name"
                                     className="flex-1 bg-gray-800 text-white p-2 rounded text-sm"
