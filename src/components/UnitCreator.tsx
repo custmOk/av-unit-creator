@@ -331,7 +331,7 @@ export const UnitCreator = () => {
                                     <label className="text-xs text-gray-500 font-bold ml-1">
                                         Name
                                     </label>
-                                    <label className="text-xs text-gray-500 font-bold ml-1">
+                                    <label className="text-xs text-gray-500 font-bold mr-1">
                                         Cooldown
                                     </label>
                                 </div>
