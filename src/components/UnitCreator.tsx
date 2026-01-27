@@ -325,39 +325,35 @@ export const UnitCreator = () => {
                     ) : (
                         <div className="space-y-4">
                             <div className="flex flex-col gap-2">
-                                <div className="flex flex-row content-between">
-                                    <label className="text-xs text-gray-500 font-bold ml-1">
-                                        Name
-                                    </label>
-                                    <label className="text-xs text-gray-500 font-bold ml-1">
-                                        Cooldown
-                                    </label>
-                                </div>
-                                <div className="flex flex-row gap-2">
-                                    <input
-                                        placeholder="Active Name"
-                                        className="flex-1 bg-gray-800 text-white p-2 rounded text-sm"
-                                        value={tempActive.name}
-                                        onChange={(e) =>
-                                            setTempActive({
-                                                ...tempActive,
-                                                name: e.target.value,
-                                            })
-                                        }
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="CD (s)"
-                                        className="w-20 bg-gray-800 text-white p-2 rounded text-sm"
-                                        value={tempActive.cd}
-                                        onChange={(e) =>
-                                            setTempActive({
-                                                ...tempActive,
-                                                cd: e.target.value,
-                                            })
-                                        }
-                                    />
-                                </div>
+                                <label className="text-xs text-gray-500 font-bold ml-1">
+                                    Name
+                                </label>
+                                <label className="text-xs text-gray-500 font-bold ml-1">
+                                    Cooldown
+                                </label>
+                                <input
+                                    placeholder="Active Name"
+                                    className="flex-1 bg-gray-800 text-white p-2 rounded text-sm"
+                                    value={tempActive.name}
+                                    onChange={(e) =>
+                                        setTempActive({
+                                            ...tempActive,
+                                            name: e.target.value,
+                                        })
+                                    }
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="CD (s)"
+                                    className="w-20 bg-gray-800 text-white p-2 rounded text-sm"
+                                    value={tempActive.cd}
+                                    onChange={(e) =>
+                                        setTempActive({
+                                            ...tempActive,
+                                            cd: e.target.value,
+                                        })
+                                    }
+                                />
                             </div>
                             <input
                                 type="file"
