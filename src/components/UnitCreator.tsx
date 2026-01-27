@@ -338,7 +338,7 @@ export const UnitCreator = () => {
                                 <div className="flex gap-x-2">
                                     <input
                                         placeholder="Active Name"
-                                        className="flex-1 bg-gray-800 text-white p-2 rounded text-sm"
+                                        className="flex-1 bg-gray-800 text-white p-2 rounded text-sm border border-gray-700 focus:border-yellow-500"
                                         value={tempActive.name}
                                         onChange={(e) =>
                                             setTempActive({
@@ -350,7 +350,7 @@ export const UnitCreator = () => {
                                     <input
                                         type="number"
                                         placeholder="CD (s)"
-                                        className="w-20 bg-gray-800 text-white p-2 rounded text-sm"
+                                        className="w-20 bg-gray-800 text-white p-2 rounded text-sm border-gray-700 focus:border-yellow-500"
                                         value={tempActive.cd}
                                         onChange={(e) =>
                                             setTempActive({
