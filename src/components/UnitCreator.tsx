@@ -282,8 +282,9 @@ export const UnitCreator = () => {
                 <div className="bg-gray-900 p-4 rounded mb-6">
                     {activeTab === 'passive' ? (
                         <div className="space-y-4">
+                            {/* --- Passive Name --- */}
                             <label className="text-xs text-gray-500 font-bold ml-1">
-                                Description
+                                Name
                             </label>
                             <input
                                 placeholder="Passive Name"
@@ -310,7 +311,7 @@ export const UnitCreator = () => {
                                             description: val,
                                         })
                                     }
-                                    placeholder="Description (Numbers like 50% are auto-colored)"
+                                    placeholder="Description"
                                 />
                             </div>
 
@@ -324,6 +325,7 @@ export const UnitCreator = () => {
                         </div>
                     ) : (
                         <div className="space-y-4">
+                            {/* --- Active Name and Cooldown --- */}
                             <div className="flex gap-2">
                                 <input
                                     placeholder="Active Name"
@@ -349,6 +351,7 @@ export const UnitCreator = () => {
                                     }
                                 />
                             </div>
+                            {/* --- Active Image Upload --- */}
                             <input
                                 type="file"
                                 accept="image/*"
@@ -361,6 +364,7 @@ export const UnitCreator = () => {
                                     })
                                 }
                             />
+                            {/* --- Active Description --- */}
                             <div>
                                 <RichInput
                                     value={tempActive.desc}
@@ -370,12 +374,10 @@ export const UnitCreator = () => {
                                             desc: val,
                                         })
                                     }
-                                    placeholder="Active Description (Highlight words to color them)"
+                                    placeholder="Active Description"
                                 />
-                                <span className="text-[10px] text-gray-500 block mt-1">
-                                    Separate distinct effects with a new line.
-                                </span>
                             </div>
+
                             <button
                                 type="button"
                                 onClick={addActive}
