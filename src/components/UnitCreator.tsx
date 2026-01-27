@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ActiveAbility, PassiveAbility, Rarity } from '../types';
 import { supabase } from '../supabaseClient';
 import { UnitCard } from './UnitCard';
@@ -10,6 +10,22 @@ export const UnitCreator = () => {
     const [mainPreview, setMainPreview] = useState<string>('');
 
     const [rarity, setRarity] = useState<Rarity>('Mythic');
+
+    const [category, setCategory] = useState('Uncategorized');
+    const [existingCategories, setExistingCategories] = useState<string[]>([]);
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        const { data } = await supabase.from('units').select('category');
+
+        if (data) {
+            const unique = [...new Set(data.map((u: any) => u.category))];
+            setExistingCategories(unique);
+        }
+    }
 
     const [passives, setPassives] = useState<PassiveAbility[]>([]);
     const [actives, setActives] = useState<(ActiveAbility & { file?: File })[]>(
@@ -123,6 +139,7 @@ export const UnitCreator = () => {
                 {
                     name: name,
                     rarity: rarity,
+                    category: category,
                     image_url: mainImageUrl,
                     passives: passives,
                     actives: finalActives
@@ -160,6 +177,30 @@ export const UnitCreator = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
+                </div>
+
+                {/* --- NEW: CATEGORY INPUT --- */}
+                <div className="mb-6">
+                <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">Unit Category</label>
+                <div className="relative">
+                    <input 
+                    type="text" 
+                    list="category-suggestions" // Connects to the datalist below
+                    className="w-full bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-blue-500 outline-none"
+                    placeholder="e.g. Mage, Tank, Boss..."
+                    value={category}
+                    onChange={e => setCategory(e.target.value)}
+                    />
+                    {/* HTML Datalist provides autocomplete suggestions based on DB data */}
+                    <datalist id="category-suggestions">
+                    {existingCategories.map(cat => (
+                        <option key={cat} value={cat} />
+                    ))}
+                    </datalist>
+                </div>
+                <p className="text-[10px] text-gray-500 mt-1">
+                    * Type a new name to create a category, or select an existing one.
+                </p>
                 </div>
 
                 {/* Rarity Selector Row */}
@@ -349,6 +390,7 @@ export const UnitCreator = () => {
                             name: name || 'Unit Name',
                             imageUrl:
                                 mainPreview || 'https://placehold.co/300x300',
+                            category: category,
                             rarity: rarity,
                             passives: passives,
                             actives: actives,

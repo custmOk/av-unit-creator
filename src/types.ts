@@ -16,6 +16,7 @@ export interface Unit {
     id?: string;
     name: string;
     rarity: Rarity;
+    category: string;
     imageUrl: string;
     passives: PassiveAbility[];
     actives: ActiveAbility[];
