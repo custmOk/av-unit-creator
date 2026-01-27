@@ -148,7 +148,7 @@ export const RichInput: React.FC<Props> = ({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className={`w-full bg-gray-800 text-white p-3 rounded border border-gray-700 focus:border-blue-500 outline-none font-mono text-sm ${className || 'h-24'}`}
+                className={`w-full bg-gray-800 text-white p-3 rounded border border-gray-700 focus:border-blue-500 outline-none font-mono text-sm ${className || 'h-40'}`}
             />
 
             <p className="text-[10px] text-gray-500">
