@@ -11,7 +11,7 @@ export const UnitCreator = () => {
 
     const [rarity, setRarity] = useState<Rarity>('Mythic');
 
-    const [category, setCategory] = useState('Uncategorized');
+    const [category, setCategory] = useState('');
     const [existingCategories, setExistingCategories] = useState<string[]>([]);
 
     useEffect(() => {
