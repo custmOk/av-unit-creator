@@ -3,6 +3,7 @@ import type { ActiveAbility, PassiveAbility, Rarity } from '../types';
 import { supabase } from '../supabaseClient';
 import { UnitCard } from './UnitCard';
 import { RichInput } from './RichInput';
+import { RichTextParser } from './RichTextParser';
 
 export const UnitCreator = () => {
     const [name, setName] = useState('');
@@ -112,6 +113,19 @@ export const UnitCreator = () => {
         ]);
 
         setTempActive({ name: '', desc: '', cd: '0', file: null });
+    };
+
+    const removePassive = (indexToRemove: number) => {
+        setPassives(passives.filter((_, index) => index !== indexToRemove));
+    };
+
+    const removeActive = (indexToRemove: number) => {
+        const activeToRemove = actives[indexToRemove];
+        if (activeToRemove.iconUrl) {
+            URL.revokeObjectURL(activeToRemove.iconUrl);
+        }
+
+        setActives(actives.filter((_, index) => index !== indexToRemove));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -260,7 +274,7 @@ export const UnitCreator = () => {
                     />
                 </div>
 
-                {/* --- Ability Tabs --- */}
+                {/* --- Tabs --- */}
                 <div className="flex mb-4 border-b border-gray-700">
                     <button
                         type="button"
@@ -322,6 +336,35 @@ export const UnitCreator = () => {
                             >
                                 + Add Passive
                             </button>
+
+                            {/* --- LIST OF ADDED PASSIVES (With Delete Button) --- */}
+                            <div className="mt-4 space-y-2">
+                                {passives.map((p, i) => (
+                                <div key={i} className="flex justify-between items-start bg-gray-800 p-3 rounded border border-gray-700 group">
+                                    <div className="text-sm">
+                                        <span className="font-bold text-yellow-500 block mb-1">
+                                            <RichTextParser text={p.name} />
+                                        </span>
+                                        <p className="text-xs text-gray-400 line-clamp-1">
+                                            {p.description[0]} {/* Show first line as preview */}
+                                        </p>
+                                    </div>
+                                    
+                                    {/* DELETE BUTTON */}
+                                    <button 
+                                    type="button"
+                                    onClick={() => removePassive(i)}
+                                    className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition-colors"
+                                    title="Remove Passive"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                ))}
+                                {passives.length === 0 && <p className="text-xs text-gray-600 italic">No passives added yet.</p>}
+                            </div>
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -403,6 +446,37 @@ export const UnitCreator = () => {
                             >
                                 + Add Active
                             </button>
+
+                            {/* --- LIST OF ADDED ACTIVES (With Delete Button) --- */}
+                            <div className="mt-4 space-y-2">
+                                {actives.map((a, i) => (
+                                <div key={i} className="flex justify-between items-center bg-gray-800 p-3 rounded border border-gray-700">
+                                    <div className="flex items-center gap-3">
+                                    {/* Tiny Image Preview */}
+                                        <img src={a.iconUrl} alt="icon" className="w-8 h-8 rounded object-cover bg-gray-900" />
+                                        <div className="text-sm">
+                                            <span className="font-bold text-blue-400 block">
+                                                <RichTextParser text={a.name} />
+                                            </span>
+                                            <span className="text-[10px] text-gray-500 uppercase">CD: {a.cooldown}s</span>
+                                        </div>
+                                    </div>
+
+                                    {/* DELETE BUTTON */}
+                                    <button 
+                                    type="button"
+                                    onClick={() => removeActive(i)}
+                                    className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition-colors"
+                                    title="Remove Ability"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                ))}
+                                {actives.length === 0 && <p className="text-xs text-gray-600 italic">No active abilities added yet.</p>}
+                            </div>
                         </div>
                     )}
                 </div>
