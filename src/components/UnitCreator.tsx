@@ -334,7 +334,7 @@ export const UnitCreator = () => {
                                     Cooldown
                                 </label>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-x-2">
                                 <input
                                     placeholder="Active Name"
                                     className="flex-1 bg-gray-800 text-white p-2 rounded text-sm"
