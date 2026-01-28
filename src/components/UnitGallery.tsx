@@ -138,14 +138,13 @@ export const UnitGallery = () => {
                     <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`
-              px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300
-              ${
-                  selectedCategory === cat
-                      ? 'bg-blue-600 text-white shadow-lg scale-105'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
-              }
-            `}
+                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300
+                            ${
+                                selectedCategory === cat
+                                ? 'bg-blue-600 text-white shadow-lg scale-105'
+                                : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
+                            }
+                            `}
                     >
                         {cat}
                     </button>
@@ -165,10 +164,9 @@ export const UnitGallery = () => {
                             <button
                                 onClick={() => toggleRarity(group.rarity)}
                                 className={`
-                  w-full flex items-center justify-between px-6 py-3 rounded-lg shadow-lg 
-                  transition-all duration-300 hover:brightness-110
-                  ${headerColor}
-                `}
+                                    w-full flex items-center justify-between px-6 py-3 rounded-lg
+                                    shadow-lg transition-all duration-300 hover:brightness-110${headerColor}
+                                    `}
                             >
                                 <div className="flex items-center gap-3">
                                     {/* Chevron Icon that rotates */}
@@ -186,7 +184,7 @@ export const UnitGallery = () => {
                                         />
                                     </svg>
 
-                                    <span className="text-lg font-black uppercase tracking-widest text-white drop-shadow-md">
+                                    <span className="text-lg font-black tracking-widest text-white drop-shadow-md">
                                         {group.rarity}
                                     </span>
 
@@ -200,9 +198,13 @@ export const UnitGallery = () => {
                             {/* DROPDOWN CONTENT (The Grid) */}
                             <div
                                 className={`
-                  overflow-hidden transition-all duration-500 ease-in-out
-                  ${isOpen ? 'max-h-500 opacity-100 mt-6' : 'max-h-0 opacity-0 mt-0'}
-                `}
+                                    transition-all duration-500 ease-in-out
+                                    ${
+                                        isOpen
+                                        ? 'max-h-500 opacity-100 mt-6'
+                                        : 'max-h-0 opacity-0 mt-0'
+                                    }
+                                    `}
                             >
                                 <div className="flex flex-wrap gap-16 justify-center items-start pb-4">
                                     {group.units.map((unit) => (
