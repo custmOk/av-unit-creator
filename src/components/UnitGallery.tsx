@@ -184,7 +184,7 @@ export const UnitGallery = () => {
                                         />
                                     </svg>
 
-                                    <span className="text-lg font-black tracking-widest text-white drop-shadow-md">
+                                    <span className="text-lg tracking-widest text-white drop-shadow-md">
                                         {group.rarity}
                                     </span>
 
