@@ -13,11 +13,44 @@ const RARITY_WEIGHTS: Record<string, number> = {
     Rare: 1,
 };
 
+const RARITY_COLORS: Record<string, string> = {
+    Vanguard:
+        'linear-gradient(150deg, #8369c5 10%, #999999 30%, #ffffff 50%, #999999 70%, #8369c5 90%)',
+    Secret: 'linear-gradient(150deg, #c60000 10%, #500000 45%, #f40000 80%)',
+    Exclusive: 'linear-gradient(150deg, #ec0004 10%, #e385ef 90%)',
+    Mythic: 'linear-gradient(-125deg, #33ffcc 15%, #45ff41, #d6ff33, #fdd233, #ff7c33, #ff3346, #ff33b7 85%)',
+    Legendary: 'linear-gradient(150deg, #f1ff00 10%, #ff6f00 45%, #ffff00 80%)',
+    Epic: 'linear-gradient(150deg, #b20eff 10%, #3e00d4, #ae04ff 80%)',
+    Rare: 'linear-gradient(150deg, #08f3ff 10%, #2747d3, #03c6ff)',
+};
+
 export const UnitGallery = () => {
     const [units, setUnits] = useState<Unit[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+    const [openRarities, setOpenRarities] = useState<Set<string>>(
+        new Set([
+            'Vanguard',
+            'Secret',
+            'Exclusive',
+            'Mythic',
+            'Legendary',
+            'Epic',
+            'Rare',
+        ])
+    );
+
+    const toggleRarity = (rarity: string) => {
+        const newSet = new Set(openRarities);
+        if (newSet.has(rarity)) {
+            newSet.delete(rarity);
+        } else {
+            newSet.add(rarity);
+        }
+        setOpenRarities(newSet);
+    };
 
     useEffect(() => {
         fetchUnits();
@@ -35,9 +68,8 @@ export const UnitGallery = () => {
             const formattedUnits: Unit[] = (data || []).map((row: any) => ({
                 id: row.id,
                 name: row.name,
-                hp: row.hp,
                 rarity: row.rarity as Rarity,
-                category: row.category,
+                category: row.category || 'Uncategorized',
                 imageUrl: row.image_url, // Map image_url -> imageUrl
                 passives: row.passives,
                 actives: row.actives,
@@ -66,10 +98,30 @@ export const UnitGallery = () => {
         return ['All', ...Array.from(unique).sort()];
     }, [units]);
 
-    const filteredUnits = units.filter((unit) => {
-        if (selectedCategory === 'All') return true;
-        return unit.category === selectedCategory;
-    });
+    const groupedUnits = useMemo(() => {
+        // Step A: Filter by Category
+        const filtered = units.filter(
+            (u) => selectedCategory === 'All' || u.category === selectedCategory
+        );
+
+        // Step B: Group by Rarity
+        const groups: Record<string, Unit[]> = {};
+        filtered.forEach((u) => {
+            if (!groups[u.rarity]) groups[u.rarity] = [];
+            groups[u.rarity].push(u);
+        });
+
+        // Step C: Sort the groups by Rarity Weight
+        // We return an array of objects: { rarity: 'Legendary', units: [...] }
+        return Object.keys(groups)
+            .sort((a, b) => (RARITY_WEIGHTS[b] || 0) - (RARITY_WEIGHTS[a] || 0))
+            .map((rarity) => ({
+                rarity,
+                units: groups[rarity].sort((a, b) =>
+                    a.name.localeCompare(b.name)
+                ), // Sort units A-Z inside the group
+            }));
+    }, [units, selectedCategory]);
 
     if (loading)
         return (
@@ -79,8 +131,8 @@ export const UnitGallery = () => {
         );
 
     return (
-        <div className="flex flex-col items-center w-full">
-            {/* --- FILTER BAR --- */}
+        <div className="flex flex-col items-center w-full min-h-[50vh]">
+            {/* --- CATEGORY FILTER TABS --- */}
             <div className="flex flex-wrap gap-2 justify-center mb-8 bg-gray-900/50 p-4 rounded-full border border-gray-800 backdrop-blur-sm sticky top-4 z-40 shadow-xl">
                 {categories.map((cat) => (
                     <button
@@ -100,24 +152,82 @@ export const UnitGallery = () => {
                 ))}
             </div>
 
-            {/* --- THE GRID --- */}
-            <div className="flex flex-wrap gap-16 p-4 justify-center items-start w-full">
-                {filteredUnits.map((unit) => (
-                    <UnitCard
-                        key={unit.id}
-                        unit={unit}
-                        isSelected={selectedId === unit.id}
-                        onSelect={() =>
-                            setSelectedId(
-                                selectedId === unit.id ? null : unit.id!
-                            )
-                        }
-                    />
-                ))}
+            {/* --- RARITY DROPDOWNS --- */}
+            <div className="w-full max-w-7xl space-y-6">
+                {groupedUnits.map((group) => {
+                    const isOpen = openRarities.has(group.rarity);
+                    const headerColor =
+                        RARITY_COLORS[group.rarity] || 'bg-gray-700';
 
-                {filteredUnits.length === 0 && (
-                    <div className="text-gray-500 italic mt-10">
-                        No units found in "{selectedCategory}".
+                    return (
+                        <div key={group.rarity} className="w-full">
+                            {/* DROPDOWN HEADER */}
+                            <button
+                                onClick={() => toggleRarity(group.rarity)}
+                                className={`
+                  w-full flex items-center justify-between px-6 py-3 rounded-lg shadow-lg 
+                  transition-all duration-300 hover:brightness-110
+                  ${headerColor}
+                `}
+                            >
+                                <div className="flex items-center gap-3">
+                                    {/* Chevron Icon that rotates */}
+                                    <svg
+                                        className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={3}
+                                            d="M19 9l-7 7-7-7"
+                                        />
+                                    </svg>
+
+                                    <span className="text-lg font-black uppercase tracking-widest text-white drop-shadow-md">
+                                        {group.rarity}
+                                    </span>
+
+                                    {/* Count Badge */}
+                                    <span className="bg-black/30 px-2 py-0.5 rounded text-xs font-mono text-white/90">
+                                        {group.units.length}
+                                    </span>
+                                </div>
+                            </button>
+
+                            {/* DROPDOWN CONTENT (The Grid) */}
+                            <div
+                                className={`
+                  overflow-hidden transition-all duration-500 ease-in-out
+                  ${isOpen ? 'max-h-500 opacity-100 mt-6' : 'max-h-0 opacity-0 mt-0'}
+                `}
+                            >
+                                <div className="flex flex-wrap gap-16 justify-center items-start pb-4">
+                                    {group.units.map((unit) => (
+                                        <UnitCard
+                                            key={unit.id}
+                                            unit={unit}
+                                            isSelected={selectedId === unit.id}
+                                            onSelect={() =>
+                                                setSelectedId(
+                                                    selectedId === unit.id
+                                                        ? null
+                                                        : unit.id!
+                                                )
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+
+                {groupedUnits.length === 0 && (
+                    <div className="text-gray-500 text-center mt-10 italic">
+                        No units found in this category.
                     </div>
                 )}
             </div>
