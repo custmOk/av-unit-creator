@@ -206,7 +206,7 @@ export const UnitGallery = () => {
                                     }
                                     `}
                             >
-                                <div className="flex flex-wrap gap-16 justify-center items-start pb-4">
+                                <div className="flex flex-wrap gap-16 justify-center items-start p-4">
                                     {group.units.map((unit) => (
                                         <UnitCard
                                             key={unit.id}
