@@ -54,7 +54,7 @@ const PassiveGroupSlot = ({
     return (
         <div
             className={`
-        group relative w-16 h-16 ml-4 mb-3 bg-gray-900 border-2 border-yellow-500/50 rounded-lg 
+        group/icon relative w-16 h-16 ml-4 mb-3 bg-gray-900 border-2 border-yellow-500/50 rounded-lg 
         cursor-help hover:border-yellow-400 hover:shadow-[0_0_15px_rgba(234,179,8,0.4)]
         transition-all duration-500 ease-out transform
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8 pointer-events-none'}
@@ -67,7 +67,7 @@ const PassiveGroupSlot = ({
             </div>
 
             {/* --- THE POP-OUT LIST --- */}
-            <div className="absolute left-full top-0 ml-3 w-72 bg-gray-900 border border-yellow-600/30 rounded-md p-4 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+            <div className="absolute left-full top-0 ml-3 w-72 bg-gray-900 border border-yellow-600/30 rounded-md p-4 opacity-0 group-hover/icon:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
                 <h4 className="font-bold text-yellow-500 text-sm uppercase tracking-wider mb-3 border-b border-gray-700 pb-2">
                     Passive Traits
                 </h4>
@@ -115,12 +115,14 @@ const ActiveSlot = ({
     index: number;
     isVisible: boolean;
 }) => {
-    const lines = Array.isArray(ability.description) ? ability.description : [ability.description];
+    const lines = Array.isArray(ability.description)
+        ? ability.description
+        : [ability.description];
 
     return (
         <div
             className={`
-        group relative w-16 h-16 ml-4 mb-3 bg-gray-800 border-2 border-blue-500/30 rounded-lg 
+        group/icon relative w-16 h-16 ml-4 mb-3 bg-gray-800 border-2 border-blue-500/30 rounded-lg 
         cursor-help hover:border-blue-400 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)]
         transition-all duration-500 ease-out transform
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8 pointer-events-none'}
@@ -134,23 +136,28 @@ const ActiveSlot = ({
                 className="w-full h-full object-cover rounded-md"
             />
 
-            <div className="absolute left-full top-0 ml-3 w-56 bg-gray-900 border border-gray-600 rounded-md p-3 opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+            <div className="absolute left-full top-0 ml-3 w-56 bg-gray-900 border border-gray-600 rounded-md p-3 opacity-0 group-hover/icon:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
                 <h4 className="font-bold text-blue-400 text-sm">
                     {ability.name}
                 </h4>
                 {/* Description List */}
                 <div className="space-y-1 mb-2">
-                {lines.map((line: string, i: number) => (
-                    <div key={i} className="flex items-start text-xs text-gray-300 leading-relaxed">
-                    {/* Only show bullet point if there is more than 1 line, looks cleaner */}
-                    {lines.length > 1 && (
-                        <span className="mr-2 text-blue-500 mt-0.5">•</span>
-                    )}
-                        <span>
-                            <RichTextParser text={line} />
-                        </span>
-                    </div>
-                ))}
+                    {lines.map((line: string, i: number) => (
+                        <div
+                            key={i}
+                            className="flex items-start text-xs text-gray-300 leading-relaxed"
+                        >
+                            {/* Only show bullet point if there is more than 1 line, looks cleaner */}
+                            {lines.length > 1 && (
+                                <span className="mr-2 text-blue-500 mt-0.5">
+                                    •
+                                </span>
+                            )}
+                            <span>
+                                <RichTextParser text={line} />
+                            </span>
+                        </div>
+                    ))}
                 </div>
                 <span className="inline-block bg-blue-900/50 text-blue-200 text-[10px] px-2 py-0.5 rounded border border-blue-500/30">
                     🕒 {ability.cooldown}s Cooldown
@@ -180,34 +187,33 @@ export const UnitCard: React.FC<UnitCardProps> = ({
         >
             <div className="flex flex-col group">
                 {/* 1. THE CARD BODY (Now a Square) */}
-                <div onClick={onSelect} className={'cursor-pointer group'}>
+                <div onClick={onSelect} className={'cursor-pointer group/card'}>
                     {/* --- CARD IMAGE BOX --- */}
                     <div
                         className={`
                             relative w-64 h-64 shrink-0 
                             transition-transform duration-500 ease-out mb-3
-                            /* Change: Using group-hover so it reacts to the parent being hovered */
-                            ${isSelected ? 'scale-105' : 'group-hover:scale-[1.02]'}
+                            ${isSelected ? 'scale-105' : 'group-hover/card:scale-[1.02]'}
                         `}
                     >
                         {/* --- LAYER 1: THE GLOW --- */}
                         {/* This layer is large (-inset-3) and very blurry (blur-xl). 
-                    It uses style.glowCss. */}
+                        It uses style.glowCss. */}
                         <div
                             className={`
                                 absolute inset-1 rounded-xl blur-2xl transition-all duration-500
-                                ${isSelected ? 'opacity-100' : 'opacity-40 group-hover:opacity-75'}
+                                ${isSelected ? 'opacity-100' : 'opacity-40 group-hover/card:opacity-75'}
                             `}
                             style={{ background: style.glowCss }}
                         />
 
                         {/* --- LAYER 2: THE BORDER --- */}
                         {/* This layer is tight (-inset-[2px]) and sharp (no blur). 
-                    It uses style.borderCss. */}
+                        It uses style.borderCss. */}
                         <div
                             className={`
                                 absolute -inset-1 rounded-xl transition-opacity duration-300
-                                ${isSelected ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}
+                                ${isSelected ? 'opacity-100' : 'opacity-70 group-hover/card:opacity-100'}
                             `}
                             style={{ background: style.borderCss }}
                         />
@@ -229,7 +235,7 @@ export const UnitCard: React.FC<UnitCardProps> = ({
                         className={`
                     w-64 text-left pl-1 
                     transition-transform duration-300 
-                    ${isSelected ? 'translate-y-2' : 'group-hover:translate-y-1'}
+                    ${isSelected ? 'translate-y-2' : 'group-hover/card:translate-y-1'}
                     `}
                     >
                         <h2
