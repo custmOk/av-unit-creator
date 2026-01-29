@@ -53,7 +53,7 @@ function App() {
             {/* GALLERY (Pass Edit Handler) */}
             <UnitGallery
                 session={session}
-                onEdit={(unit) => setEditingUnit(unit)} // <--- Capture unit to edit
+                onEdit={handleEditUnit} // <--- Capture unit to edit
             />
 
             <div className="border-t border-gray-800 my-10"></div>
