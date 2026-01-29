@@ -142,25 +142,6 @@ export const UnitCreator: React.FC<Props> = ({
         description: '',
     });
 
-    const addPassive = () => {
-        if (!tempPassive.name || !tempPassive.description) return;
-
-        const descriptionArray = tempPassive.description
-            .split('\n')
-            .map((line) => line.trim())
-            .filter((line) => line !== '');
-
-        setPassives([
-            ...passives,
-            {
-                name: tempPassive.name,
-                description: descriptionArray,
-            },
-        ]);
-
-        setTempPassive({ name: '', description: '' });
-    };
-
     const [tempActive, setTempActive] = useState<{
         name: string;
         desc: string;
@@ -187,31 +168,6 @@ export const UnitCreator: React.FC<Props> = ({
             .getPublicUrl(path);
 
         return publicUrlData.publicUrl;
-    };
-
-    const addActive = () => {
-        if (!tempActive.name || !tempActive.desc || !tempActive.file) return;
-
-        // Create a local URL for the preview immediately
-        const previewUrl = URL.createObjectURL(tempActive.file);
-
-        const descriptionArray = tempActive.desc
-            .split('\n')
-            .map((line) => line.trim())
-            .filter((line) => line !== '');
-
-        setActives([
-            ...actives,
-            {
-                name: tempActive.name,
-                description: descriptionArray,
-                cooldown: parseInt(tempActive.cd),
-                iconUrl: previewUrl,
-                file: tempActive.file,
-            },
-        ]);
-
-        setTempActive({ name: '', desc: '', cd: '0', file: null });
     };
 
     const removePassive = (indexToRemove: number) => {
