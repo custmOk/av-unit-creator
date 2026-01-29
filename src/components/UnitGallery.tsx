@@ -24,7 +24,7 @@ const RARITY_COLORS: Record<string, string> = {
     Rare: 'linear-gradient(150deg, #08f3ff 10%, #2747d3, #03c6ff)',
 };
 
-export const UnitGallery = () => {
+export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Unit) => void }) => {
     const [units, setUnits] = useState<Unit[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -74,6 +74,7 @@ export const UnitGallery = () => {
                 passives: row.passives,
                 actives: row.actives,
                 customKeywords: row.custom_keywords, // If you added this column too
+                userId: row.user_id
             }));
 
             formattedUnits.sort((a, b) => {
@@ -208,6 +209,7 @@ export const UnitGallery = () => {
                             >
                                 <div className="flex flex-wrap gap-16 justify-center items-start p-4">
                                     {group.units.map((unit) => (
+                                        <div className="relative group">
                                         <UnitCard
                                             key={unit.id}
                                             unit={unit}
@@ -220,6 +222,21 @@ export const UnitGallery = () => {
                                                 )
                                             }
                                         />
+                                        {session && session.user.id === unit.userId && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onEdit(unit); // TRIGGER EDIT
+                                                    // Optional: Scroll to top
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }}
+                                                className="absolute top-2 right-2 z-50 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all"
+                                            >
+                                                {/* Edit Pencil Icon */}
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                            </button>
+                                        )}
+                                        </div>
                                     ))}
                                 </div>
                             </div>

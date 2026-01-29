@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import type { ActiveAbility, PassiveAbility, Rarity } from '../types';
+import type { ActiveAbility, PassiveAbility, Rarity, Unit } from '../types';
 import { supabase } from '../supabaseClient';
 import { UnitCard } from './UnitCard';
 import { RichInput } from './RichInput';
 import { RichTextParser } from './RichTextParser';
 
-export const UnitCreator = () => {
+interface Props {
+    session: any;
+    unitToEdit?: Unit | null;
+    onCancelEdit?: () => void;
+}
+
+export const UnitCreator: React.FC<Props> = ({
+    session,
+    unitToEdit,
+    onCancelEdit,
+}) => {
     const [name, setName] = useState('');
     const [mainImage, setMainImage] = useState<File | null>(null);
     const [mainPreview, setMainPreview] = useState<string>('');
@@ -128,53 +138,93 @@ export const UnitCreator = () => {
         setActives(actives.filter((_, index) => index !== indexToRemove));
     };
 
+    useEffect(() => {
+        if (unitToEdit) {
+            setName(unitToEdit.name);
+            setRarity(unitToEdit.rarity);
+            setCategory(unitToEdit.category || 'Uncategorized');
+            setPassives(unitToEdit.passives || []);
+            setActives(unitToEdit.actives || []);
+        } else {
+            resetForm();
+        }
+    }, [unitToEdit]);
+
+    const resetForm = () => {
+        setName('');
+        setRarity('Mythic');
+        setCategory('Uncategorized');
+        setPassives([]);
+        setActives([]);
+        setMainImage(null);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!mainImage) return alert('Please select a main unit image!');
+
+        if (!session?.user) return alert('You must be logged in to save units');
 
         setIsUploading(true);
 
         try {
             const timestamp = Date.now();
+            let finalMainImageUrl = '';
 
-            const mainImagePath = `units/${timestamp}_${mainImage.name}`;
-            const mainImageUrl = await uploadFile(mainImage, mainImagePath);
+            if (mainImage) {
+                const path = `units/${timestamp}_${mainImage.name}`;
+                finalMainImageUrl = await uploadFile(mainImage, path);
+            } else if (unitToEdit && unitToEdit.imageUrl) {
+                finalMainImageUrl = unitToEdit.imageUrl;
+            } else {
+                setIsUploading(false);
+                return alert('Please select a main unit image!');
+            }
 
             const finalActives = await Promise.all(
                 actives.map(async (ability) => {
-                    let iconUrl = ability.iconUrl;
-
                     if (ability.file) {
                         const iconPath = `icons/${timestamp}_${ability.name}_${ability.file.name}`;
-                        iconUrl = await uploadFile(ability.file, iconPath);
+                        const newUrl = await uploadFile(ability.file, iconPath);
+                        return { ...ability, iconUrl: newUrl, file: undefined };
                     }
 
-                    return {
-                        name: ability.name,
-                        description: ability.description,
-                        cooldown: ability.cooldown,
-                        iconUrl: iconUrl,
-                    };
+                    return ability;
                 })
             );
 
-            const { error } = await supabase.from('units').insert([
-                {
-                    name: name,
-                    rarity: rarity,
-                    category: category,
-                    image_url: mainImageUrl,
-                    passives: passives,
-                    actives: finalActives,
-                },
-            ]);
+            const unitData = {
+                name,
+                rarity,
+                category,
+                image_url: finalMainImageUrl,
+                passives,
+                actives: finalActives,
+                user_id: session.user.id
+            };
 
-            if (error) throw error;
+            if (unitToEdit) {
+                const { error } = await supabase
+                .from('units')
+                .update(unitData)
+                .eq('id', unitToEdit.id);
 
-            alert('Unit Saved Successfully');
-        } catch (error) {
+                if (error) throw error;
+                alert("Unit Updated Successfully!");
+                if (onCancelEdit) onCancelEdit();
+
+            } else {
+                const { error } = await supabase
+                .from('units')
+                .insert([unitData]);
+
+                if (error) throw error;
+                alert("Unit Created Successfully!");
+                resetForm();
+            }
+
+        } catch (error: any) {
             console.error('Error saving unit:', error);
-            alert('Error saving unit. Check console.');
+            alert(`Error: ${error.message}`);
         } finally {
             setIsUploading(false);
         }
@@ -190,6 +240,27 @@ export const UnitCreator = () => {
                 <h2 className="text-xl text-white font-bold mb-6">
                     Unit Factory
                 </h2>
+
+                {/* --- NEW: EDIT MODE BANNER --- */}
+                {unitToEdit && (
+                <div className="mb-6 bg-yellow-900/40 border border-yellow-600/50 p-4 rounded flex justify-between items-center">
+                    <div>
+                        <h3 className="text-yellow-400 font-bold uppercase tracking-wider text-sm">
+                            Edit Mode
+                        </h3>
+                        <p className="text-yellow-200/80 text-xs">
+                            Updating: <span className="font-bold">{unitToEdit.name}</span>
+                        </p>
+                    </div>
+                    <button 
+                    type="button" 
+                    onClick={onCancelEdit}
+                    className="text-xs bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-300 px-3 py-1.5 rounded border border-yellow-600/30 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                </div>
+                )}
 
                 {/* --- Name --- */}
                 <div className="mb-6">
@@ -340,30 +411,48 @@ export const UnitCreator = () => {
                             {/* --- LIST OF ADDED PASSIVES (With Delete Button) --- */}
                             <div className="mt-4 space-y-2">
                                 {passives.map((p, i) => (
-                                <div key={i} className="flex justify-between items-start bg-gray-800 p-3 rounded border border-gray-700 group">
-                                    <div className="text-sm">
-                                        <span className="font-bold text-yellow-500 block mb-1">
-                                            <RichTextParser text={p.name} />
-                                        </span>
-                                        <p className="text-xs text-gray-400 line-clamp-1">
-                                            {p.description[0]} {/* Show first line as preview */}
-                                        </p>
-                                    </div>
-                                    
-                                    {/* DELETE BUTTON */}
-                                    <button 
-                                    type="button"
-                                    onClick={() => removePassive(i)}
-                                    className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition-colors"
-                                    title="Remove Passive"
+                                    <div
+                                        key={i}
+                                        className="flex justify-between items-start bg-gray-800 p-3 rounded border border-gray-700 group"
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
+                                        <div className="text-sm">
+                                            <span className="font-bold text-yellow-500 block mb-1">
+                                                <RichTextParser text={p.name} />
+                                            </span>
+                                            <p className="text-xs text-gray-400 line-clamp-1">
+                                                {p.description[0]}{' '}
+                                                {/* Show first line as preview */}
+                                            </p>
+                                        </div>
+
+                                        {/* DELETE BUTTON */}
+                                        <button
+                                            type="button"
+                                            onClick={() => removePassive(i)}
+                                            className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition-colors"
+                                            title="Remove Passive"
+                                        >
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 ))}
-                                {passives.length === 0 && <p className="text-xs text-gray-600 italic">No passives added yet.</p>}
+                                {passives.length === 0 && (
+                                    <p className="text-xs text-gray-600 italic">
+                                        No passives added yet.
+                                    </p>
+                                )}
                             </div>
                         </div>
                     ) : (
@@ -450,45 +539,78 @@ export const UnitCreator = () => {
                             {/* --- LIST OF ADDED ACTIVES (With Delete Button) --- */}
                             <div className="mt-4 space-y-2">
                                 {actives.map((a, i) => (
-                                <div key={i} className="flex justify-between items-center bg-gray-800 p-3 rounded border border-gray-700">
-                                    <div className="flex items-center gap-3">
-                                    {/* Tiny Image Preview */}
-                                        <img src={a.iconUrl} alt="icon" className="w-8 h-8 rounded object-cover bg-gray-900" />
-                                        <div className="text-sm">
-                                            <span className="font-bold text-blue-400 block">
-                                                <RichTextParser text={a.name} />
-                                            </span>
-                                            <span className="text-[10px] text-gray-500 uppercase">CD: {a.cooldown}s</span>
-                                        </div>
-                                    </div>
-
-                                    {/* DELETE BUTTON */}
-                                    <button 
-                                    type="button"
-                                    onClick={() => removeActive(i)}
-                                    className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition-colors"
-                                    title="Remove Ability"
+                                    <div
+                                        key={i}
+                                        className="flex justify-between items-center bg-gray-800 p-3 rounded border border-gray-700"
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
+                                        <div className="flex items-center gap-3">
+                                            {/* Tiny Image Preview */}
+                                            <img
+                                                src={a.iconUrl}
+                                                alt="icon"
+                                                className="w-8 h-8 rounded object-cover bg-gray-900"
+                                            />
+                                            <div className="text-sm">
+                                                <span className="font-bold text-blue-400 block">
+                                                    <RichTextParser
+                                                        text={a.name}
+                                                    />
+                                                </span>
+                                                <span className="text-[10px] text-gray-500 uppercase">
+                                                    CD: {a.cooldown}s
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* DELETE BUTTON */}
+                                        <button
+                                            type="button"
+                                            onClick={() => removeActive(i)}
+                                            className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition-colors"
+                                            title="Remove Ability"
+                                        >
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 ))}
-                                {actives.length === 0 && <p className="text-xs text-gray-600 italic">No active abilities added yet.</p>}
+                                {actives.length === 0 && (
+                                    <p className="text-xs text-gray-600 italic">
+                                        No active abilities added yet.
+                                    </p>
+                                )}
                             </div>
                         </div>
                     )}
                 </div>
 
-                <button
-                    disabled={isUploading}
-                    type="submit"
-                    className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded transition-colors"
+                {/* Update your Submit Button Text */}
+                <button 
+                type="submit" 
+                disabled={isUploading}
+                className={`
+                    w-full font-bold py-3 rounded transition-colors mt-6
+                    ${unitToEdit 
+                    ? 'bg-yellow-600 hover:bg-yellow-500 text-white' 
+                    : 'bg-green-600 hover:bg-green-500 text-white'
+                    }
+                `}
                 >
-                    {isUploading
-                        ? 'Uploading & Saving...'
-                        : 'Upload Unit to Server'}
+                {isUploading 
+                    ? 'Saving...' 
+                    : unitToEdit ? 'Update Unit' : 'Create Unit'
+                }
                 </button>
             </form>
 
@@ -510,6 +632,7 @@ export const UnitCreator = () => {
                             rarity: rarity,
                             passives: passives,
                             actives: actives,
+                            userId: 'preview'
                         }}
                     />
                     <p className="text-gray-500 text-xs mt-20 max-w-62.5">

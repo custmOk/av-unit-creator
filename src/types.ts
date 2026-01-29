@@ -20,4 +20,5 @@ export interface Unit {
     imageUrl: string;
     passives: PassiveAbility[];
     actives: ActiveAbility[];
+    userId: string;
 }
