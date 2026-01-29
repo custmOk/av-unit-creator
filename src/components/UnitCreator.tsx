@@ -39,11 +39,100 @@ export const UnitCreator: React.FC<Props> = ({
     };
 
     const [passives, setPassives] = useState<PassiveAbility[]>([]);
-    const [actives, setActives] = useState<(ActiveAbility & { file?: File })[]>(
-        []
-    );
+    const [actives, setActives] = useState<
+        (ActiveAbility & { file?: File | null })[]
+    >([]);
 
     const [activeTab, setActiveTab] = useState<'passive' | 'active'>('passive');
+
+    const [editingPassiveIndex, setEditingPassiveIndex] = useState<
+        number | null
+    >(null);
+    const [editingActiveIndex, setEditingActiveIndex] = useState<number | null>(
+        null
+    );
+
+    const startEditingPassive = (index: number) => {
+        const p = passives[index];
+        setTempPassive({
+            name: p.name,
+            description: p.description.join('\n'),
+        });
+        setEditingPassiveIndex(index);
+    };
+
+    const handlePassiveSubmit = () => {
+        if (!tempPassive.name || !tempPassive.description) return;
+
+        const descArray = tempPassive.description
+            .split('\n')
+            .filter((l) => l.trim() != '');
+
+        const newPassiveObj = {
+            name: tempPassive.name,
+            description: descArray,
+        };
+
+        if (editingPassiveIndex !== null) {
+            const updatedList = [...passives];
+            updatedList[editingPassiveIndex] = newPassiveObj;
+            setPassives(updatedList);
+            setEditingPassiveIndex(null);
+        } else {
+            setPassives([...passives, newPassiveObj]);
+        }
+
+        setTempPassive({ name: '', description: '' });
+    };
+
+    const startEditingActive = (index: number) => {
+        const a = actives[index];
+        setTempActive({
+            name: a.name,
+            desc: a.description.join('\n'),
+            cd: a.cooldown.toString(),
+            file: null,
+        });
+
+        setEditingActiveIndex(index);
+    };
+
+    const handleActiveSubmit = () => {
+        if (!tempActive.name || !tempActive.desc) return;
+
+        let iconUrlToUse = '';
+
+        if (tempActive.file) {
+            iconUrlToUse = URL.createObjectURL(tempActive.file);
+        } else if (editingActiveIndex !== null) {
+            iconUrlToUse = actives[editingActiveIndex].iconUrl;
+        } else {
+            return alert('Please upload an icon');
+        }
+
+        const descArray = tempActive.desc
+            .split('\n')
+            .filter((l) => l.trim() !== '');
+
+        const newActiveObj = {
+            name: tempActive.name,
+            description: descArray,
+            cooldown: parseInt(tempActive.cd) || 0,
+            iconUrl: iconUrlToUse,
+            file: tempActive.file,
+        };
+
+        if (editingActiveIndex !== null) {
+            const updatedList = [...actives];
+            updatedList[editingActiveIndex] = newActiveObj;
+            setActives(updatedList);
+            setEditingActiveIndex(null);
+        } else {
+            setActives([...actives, newActiveObj]);
+        }
+
+        setTempActive({ name: '', desc: '', cd: '0', file: null });
+    };
 
     const [tempPassive, setTempPassive] = useState<{
         name: string;
@@ -199,29 +288,27 @@ export const UnitCreator: React.FC<Props> = ({
                 image_url: finalMainImageUrl,
                 passives,
                 actives: finalActives,
-                user_id: session.user.id
+                user_id: session.user.id,
             };
 
             if (unitToEdit) {
                 const { error } = await supabase
-                .from('units')
-                .update(unitData)
-                .eq('id', unitToEdit.id);
+                    .from('units')
+                    .update(unitData)
+                    .eq('id', unitToEdit.id);
 
                 if (error) throw error;
-                alert("Unit Updated Successfully!");
+                alert('Unit Updated Successfully!');
                 if (onCancelEdit) onCancelEdit();
-
             } else {
                 const { error } = await supabase
-                .from('units')
-                .insert([unitData]);
+                    .from('units')
+                    .insert([unitData]);
 
                 if (error) throw error;
-                alert("Unit Created Successfully!");
+                alert('Unit Created Successfully!');
                 resetForm();
             }
-
         } catch (error: any) {
             console.error('Error saving unit:', error);
             alert(`Error: ${error.message}`);
@@ -243,23 +330,26 @@ export const UnitCreator: React.FC<Props> = ({
 
                 {/* --- NEW: EDIT MODE BANNER --- */}
                 {unitToEdit && (
-                <div className="mb-6 bg-yellow-900/40 border border-yellow-600/50 p-4 rounded flex justify-between items-center">
-                    <div>
-                        <h3 className="text-yellow-400 font-bold uppercase tracking-wider text-sm">
-                            Edit Mode
-                        </h3>
-                        <p className="text-yellow-200/80 text-xs">
-                            Updating: <span className="font-bold">{unitToEdit.name}</span>
-                        </p>
+                    <div className="mb-6 bg-yellow-900/40 border border-yellow-600/50 p-4 rounded flex justify-between items-center">
+                        <div>
+                            <h3 className="text-yellow-400 font-bold uppercase tracking-wider text-sm">
+                                Edit Mode
+                            </h3>
+                            <p className="text-yellow-200/80 text-xs">
+                                Updating:{' '}
+                                <span className="font-bold">
+                                    {unitToEdit.name}
+                                </span>
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={onCancelEdit}
+                            className="text-xs bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-300 px-3 py-1.5 rounded border border-yellow-600/30 transition-colors"
+                        >
+                            Cancel
+                        </button>
                     </div>
-                    <button 
-                    type="button" 
-                    onClick={onCancelEdit}
-                    className="text-xs bg-yellow-600/20 hover:bg-yellow-600/40 text-yellow-300 px-3 py-1.5 rounded border border-yellow-600/30 transition-colors"
-                    >
-                        Cancel
-                    </button>
-                </div>
                 )}
 
                 {/* --- Name --- */}
@@ -400,20 +490,48 @@ export const UnitCreator: React.FC<Props> = ({
                                 />
                             </div>
 
-                            <button
-                                type="button"
-                                onClick={addPassive}
-                                className="w-full bg-yellow-600/20 text-yellow-400 border border-yellow-600/50 py-2 rounded hover:bg-yellow-600/40"
-                            >
-                                + Add Passive
-                            </button>
+                            {/* BUTTONS ROW */}
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handlePassiveSubmit}
+                                    className={`flex-1 py-2 rounded font-bold transition-colors ${
+                                        editingPassiveIndex !== null
+                                            ? 'bg-blue-600 hover:bg-blue-500 text-white'
+                                            : 'bg-yellow-600/20 text-yellow-400 border border-yellow-600/50 hover:bg-yellow-600/40'
+                                    }`}
+                                >
+                                    {editingPassiveIndex !== null
+                                        ? 'Update Passive'
+                                        : '+ Add Passive'}
+                                </button>
+
+                                {/* CANCEL BUTTON (Only shows when editing) */}
+                                {editingPassiveIndex !== null && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditingPassiveIndex(null);
+                                            setTempPassive({
+                                                name: '',
+                                                description: '',
+                                            });
+                                        }}
+                                        className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                            </div>
 
                             {/* --- LIST OF ADDED PASSIVES (With Delete Button) --- */}
                             <div className="mt-4 space-y-2">
                                 {passives.map((p, i) => (
                                     <div
                                         key={i}
-                                        className="flex justify-between items-start bg-gray-800 p-3 rounded border border-gray-700 group"
+                                        className={`flex justify-between items-start bg-gray-800 p-3 rounded border border-gray-700 group
+                                            ${editingPassiveIndex === i ? 'bg-blue-900/20 border-blue-500' : 'bg-gray-800 border-gray-700'}
+                                            `}
                                     >
                                         <div className="text-sm">
                                             <span className="font-bold text-yellow-500 block mb-1">
@@ -425,27 +543,53 @@ export const UnitCreator: React.FC<Props> = ({
                                             </p>
                                         </div>
 
-                                        {/* DELETE BUTTON */}
-                                        <button
-                                            type="button"
-                                            onClick={() => removePassive(i)}
-                                            className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition-colors"
-                                            title="Remove Passive"
-                                        >
-                                            <svg
-                                                className="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
+                                        <div className="flex gap-1">
+                                            {/* EDIT BUTTON */}
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    startEditingPassive(i)
+                                                }
+                                                className="text-gray-500 hover:text-blue-400 hover:bg-gray-700 p-1 rounded"
+                                                title="Edit"
                                             >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M6 18L18 6M6 6l12 12"
-                                                />
-                                            </svg>
-                                        </button>
+                                                {/* Pencil Icon */}
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                    />
+                                                </svg>
+                                            </button>
+
+                                            {/* DELETE BUTTON */}
+                                            <button
+                                                type="button"
+                                                onClick={() => removePassive(i)}
+                                                className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded"
+                                            >
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                                 {passives.length === 0 && (
@@ -528,20 +672,46 @@ export const UnitCreator: React.FC<Props> = ({
                                 />
                             </div>
 
-                            <button
-                                type="button"
-                                onClick={addActive}
-                                className="w-full bg-blue-600/20 text-blue-400 border border-blue-600/50 py-2 rounded hover:bg-blue-600/40"
-                            >
-                                + Add Active
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handleActiveSubmit}
+                                    className={`flex-1 py-2 rounded font-bold transition-colors ${
+                                        editingActiveIndex !== null
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-blue-600/20 text-blue-400 border border-blue-600/50'
+                                    }`}
+                                >
+                                    {editingActiveIndex !== null
+                                        ? 'Update Active'
+                                        : '+ Add Active'}
+                                </button>
+                                {editingActiveIndex !== null && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEditingActiveIndex(null);
+                                            setTempActive({
+                                                name: '',
+                                                desc: '',
+                                                cd: '0',
+                                                file: null,
+                                            });
+                                        }}
+                                        className="px-4 py-2 bg-gray-700 text-gray-300 rounded"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                            </div>
 
                             {/* --- LIST OF ADDED ACTIVES (With Delete Button) --- */}
                             <div className="mt-4 space-y-2">
                                 {actives.map((a, i) => (
                                     <div
                                         key={i}
-                                        className="flex justify-between items-center bg-gray-800 p-3 rounded border border-gray-700"
+                                        className={`flex justify-between items-center bg-gray-800 p-3 rounded border border-gray-700
+                                            ${editingActiveIndex === i ? 'bg-blue-900/20 border-blue-500' : 'bg-gray-800 border-gray-700'}`}
                                     >
                                         <div className="flex items-center gap-3">
                                             {/* Tiny Image Preview */}
@@ -562,27 +732,46 @@ export const UnitCreator: React.FC<Props> = ({
                                             </div>
                                         </div>
 
-                                        {/* DELETE BUTTON */}
-                                        <button
-                                            type="button"
-                                            onClick={() => removeActive(i)}
-                                            className="text-gray-500 hover:text-red-500 hover:bg-gray-700 p-1 rounded transition-colors"
-                                            title="Remove Ability"
-                                        >
-                                            <svg
-                                                className="w-4 h-4"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
+                                        <div className="flex gap-1">
+                                            <button
+                                                onClick={() =>
+                                                    startEditingActive(i)
+                                                }
+                                                className="text-gray-500 hover:text-blue-400 p-1"
                                             >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M6 18L18 6M6 6l12 12"
-                                                />
-                                            </svg>
-                                        </button>
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                    />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                onClick={() => removeActive(i)}
+                                                className="text-gray-500 hover:text-red-500 p-1"
+                                            >
+                                                <svg
+                                                    className="w-4 h-4"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M6 18L18 6M6 6l12 12"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                                 {actives.length === 0 && (
@@ -596,21 +785,23 @@ export const UnitCreator: React.FC<Props> = ({
                 </div>
 
                 {/* Update your Submit Button Text */}
-                <button 
-                type="submit" 
-                disabled={isUploading}
-                className={`
+                <button
+                    type="submit"
+                    disabled={isUploading}
+                    className={`
                     w-full font-bold py-3 rounded transition-colors mt-6
-                    ${unitToEdit 
-                    ? 'bg-yellow-600 hover:bg-yellow-500 text-white' 
-                    : 'bg-green-600 hover:bg-green-500 text-white'
+                    ${
+                        unitToEdit
+                            ? 'bg-yellow-600 hover:bg-yellow-500 text-white'
+                            : 'bg-green-600 hover:bg-green-500 text-white'
                     }
                 `}
                 >
-                {isUploading 
-                    ? 'Saving...' 
-                    : unitToEdit ? 'Update Unit' : 'Create Unit'
-                }
+                    {isUploading
+                        ? 'Saving...'
+                        : unitToEdit
+                          ? 'Update Unit'
+                          : 'Create Unit'}
                 </button>
             </form>
 
@@ -632,7 +823,7 @@ export const UnitCreator: React.FC<Props> = ({
                             rarity: rarity,
                             passives: passives,
                             actives: actives,
-                            userId: 'preview'
+                            userId: 'preview',
                         }}
                     />
                     <p className="text-gray-500 text-xs mt-20 max-w-62.5">
