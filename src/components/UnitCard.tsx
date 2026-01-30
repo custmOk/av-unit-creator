@@ -44,6 +44,71 @@ const RARITY_STYLES: Record<Rarity, RarityStyle> = {
     },
 };
 
+const DescriptionList: React.FC<{ lines: string[] }> = ({ lines }) => {
+    return (
+        <div className="space-y-1">
+            {lines.map((line, i) => {
+                let content = line;
+                let type = 'standard'; // standard | subsection | detail
+
+                // Check for prefixes
+                if (line.startsWith('>>') || line.startsWith('-->')) {
+                    type = 'detail';
+                    content = line.replace(/^(-->|>>)/, '').trim(); // Remove prefix
+                } else if (line.startsWith('>') || line.startsWith('->')) {
+                    type = 'subsection';
+                    content = line.replace(/^(->|>)/, '').trim(); // Remove prefix
+                }
+
+                // Apply Styles based on Type
+                if (type === 'subsection') {
+                    // Level 1: "Optional Section"
+                    return (
+                        <div
+                            key={i}
+                            className="flex items-start text-xs text-yellow-200 mt-1.5 mb-0.5 pl-2 border-l-2 border-yellow-500/30"
+                        >
+                            <span className="mr-1 opacity-75">↳</span>
+                            <span className="font-bold tracking-wide">
+                                <RichTextParser text={content} />
+                            </span>
+                        </div>
+                    );
+                } else if (type === 'detail') {
+                    // Level 2: "info 1"
+                    return (
+                        <div
+                            key={i}
+                            className="flex items-start text-[10px] text-gray-400 pl-6 leading-relaxed"
+                        >
+                            <span className="mr-1.5 text-gray-600">-</span>
+                            <span>
+                                <RichTextParser text={content} />
+                            </span>
+                        </div>
+                    );
+                } else {
+                    // Level 0: Standard Text
+                    return (
+                        <div
+                            key={i}
+                            className="flex items-start text-xs text-gray-300 leading-relaxed"
+                        >
+                            {/* Only show bullet if it's a list, or just plain text */}
+                            <span className="mr-2 text-yellow-600 mt-0.5">
+                                •
+                            </span>
+                            <span>
+                                <RichTextParser text={content} />
+                            </span>
+                        </div>
+                    );
+                }
+            })}
+        </div>
+    );
+};
+
 const PassiveGroupSlot = ({
     passives,
     isVisible,
@@ -79,19 +144,7 @@ const PassiveGroupSlot = ({
                                 <RichTextParser text={p.name} />
                             </span>
                             <div className="pl-2 space-y-1">
-                                {p.description.map((line, lineIndex) => (
-                                    <div
-                                        key={lineIndex}
-                                        className="flex items-start text-xs text-gray-300"
-                                    >
-                                        <span className="mr-2 text-yellow-600 mt-0.5">
-                                            •
-                                        </span>
-                                        <span>
-                                            <RichTextParser text={line} />
-                                        </span>
-                                    </div>
-                                ))}
+                                <DescriptionList lines={p.description} />
                             </div>
                         </li>
                     ))}
@@ -141,27 +194,12 @@ const ActiveSlot = ({
                     {ability.name}
                 </h4>
                 {/* Description List */}
-                <div className="space-y-1 mb-2">
-                    {lines.map((line: string, i: number) => (
-                        <div
-                            key={i}
-                            className="flex items-start text-xs text-gray-300 leading-relaxed"
-                        >
-                            {/* Only show bullet point if there is more than 1 line, looks cleaner */}
-                            {lines.length > 1 && (
-                                <span className="mr-2 text-blue-500 mt-0.5">
-                                    •
-                                </span>
-                            )}
-                            <span>
-                                <RichTextParser text={line} />
-                            </span>
-                        </div>
-                    ))}
+                <DescriptionList lines={lines} />
+                <div className="mt-2 pt-2 border-t border-gray-800">
+                    <span className="inline-block bg-blue-900/50 text-blue-200 text-[10px] px-2 py-0.5 rounded border border-blue-500/30">
+                        🕒 {ability.cooldown}s Cooldown
+                    </span>
                 </div>
-                <span className="inline-block bg-blue-900/50 text-blue-200 text-[10px] px-2 py-0.5 rounded border border-blue-500/30">
-                    🕒 {ability.cooldown}s Cooldown
-                </span>
             </div>
         </div>
     );
