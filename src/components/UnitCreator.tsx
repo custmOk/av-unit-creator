@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient';
 import { UnitCard } from './UnitCard';
 import { PassiveEditor } from './PassiveEditor';
 import { ActiveEditor } from './ActiveEditor';
+import { CategorySelect } from './CategorySelect';
 
 interface Props {
     session: any;
@@ -238,18 +239,14 @@ export const UnitCreator: React.FC<Props> = ({
                     <label className="text-xs text-gray-500 font-bold uppercase mb-1 block">
                         Category
                     </label>
-                    <input
-                        type="text"
-                        list="category-suggestions"
-                        className="w-full bg-gray-900 text-white p-2 rounded border border-gray-600 focus:border-blue-500 outline-none"
+                    <CategorySelect
                         value={category}
-                        onChange={(e) => setCategory(e.target.value)}
+                        onChange={setCategory}
+                        categories={existingCategories}
                     />
-                    <datalist id="category-suggestions">
-                        {existingCategories.map((cat) => (
-                            <option key={cat} value={cat} />
-                        ))}
-                    </datalist>
+                    <p className="text-[10px] text-gray-600 mt-1 ml-1">
+                        * Select an existing category or type to create a new one.
+                    </p>
                 </div>
 
                 <div className="mb-6 pb-6 border-b border-gray-700">
