@@ -261,7 +261,7 @@ export const UnitCard: React.FC<UnitCardProps> = ({
 
             {/* 2. THE SIDEBAR (Absolute positioned relative to the flex container) */}
             {/* We use 'absolute' logic or negative margins to make it overlap neighbors if needed */}
-            <div className="absolute left-full pl-4 top-4 flex flex-col pointer-events-none">
+            <div className="absolute left-full pl-2 top-2 flex flex-col pointer-events-none">
                 {/* We enable pointer-events only on the children so clicking "through" the gap works */}
                 <div className="pointer-events-auto">
                     <PassiveGroupSlot
