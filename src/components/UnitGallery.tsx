@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../supabaseClient';
 import type { Unit, Rarity } from '../types';
 import { UnitCard } from './UnitCard';
+import { adminEmails } from '../constants';
 
 const RARITY_WEIGHTS: Record<string, number> = {
     Vanguard: 7,
@@ -23,6 +24,8 @@ const RARITY_COLORS: Record<string, string> = {
     Epic: 'linear-gradient(150deg, #b20eff 10%, #3e00d4, #ae04ff 80%)',
     Rare: 'linear-gradient(150deg, #08f3ff 10%, #2747d3, #03c6ff)',
 };
+
+const ADMIN_EMAILS = adminEmails;
 
 export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Unit) => void }) => {
     const [units, setUnits] = useState<Unit[]>([]);
@@ -124,6 +127,14 @@ export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Uni
             }));
     }, [units, selectedCategory]);
 
+    const canEdit = (unitUserId: string) => {
+        if (!session?.user) return false;
+        if (session.user.id === unitUserId) return true;
+        if (session.user.email && ADMIN_EMAILS.includes(session.user.email)) return true;
+
+        return false;
+    }
+
     if (loading)
         return (
             <div className="text-white text-center p-10">
@@ -209,6 +220,7 @@ export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Uni
                             >
                                 <div className="flex flex-wrap gap-16 justify-center items-start p-4">
                                     {group.units.map((unit) => (
+
                                         <div className="relative group">
                                         <UnitCard
                                             key={unit.id}
@@ -222,19 +234,40 @@ export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Uni
                                                 )
                                             }
                                         />
-                                        {session && session.user.id === unit.userId && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onEdit(unit); // TRIGGER EDIT
-                                                    // Optional: Scroll to top
-                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                                                }}
-                                                className="absolute top-2 right-2 z-50 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all"
-                                            >
-                                                {/* Edit Pencil Icon */}
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                                            </button>
+
+                                        {canEdit(unit.userId) && (
+                                            <div className="absolute top-2 right-2 z-50 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                                {/* Edit Button */}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onEdit(unit); // TRIGGER EDIT
+                                                        // Optional: Scroll to top
+                                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                    }}
+                                                    className="absolute top-2 right-2 z-50 bg-blue-600 hover:bg-blue-500 text-white
+                                                    p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all"
+                                                >
+                                                    {/* Edit Pencil Icon */}
+                                                    ✏️
+                                                </button>
+
+                                                {/* Delete Button */}
+                                                <button
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation();
+                                                        if (!confirm("Are you sure you want to delete this unit?")) return;
+                                                        
+                                                        const { error } = await supabase.from('units').delete().eq('id', unit.id);
+                                                        if (error) alert("Error deleting: " + error.message);
+                                                        else window.location.reload(); // Simple reload to refresh list
+                                                    }}
+                                                    className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-full shadow-lg"
+                                                    title="Delete Unit"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
                                         )}
                                         </div>
                                     ))}
