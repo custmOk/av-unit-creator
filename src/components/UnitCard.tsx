@@ -54,7 +54,7 @@ const PassiveGroupSlot = ({
     return (
         <div
             className={`
-        group/icon relative w-16 h-16 ml-4 mb-3 bg-gray-900 border-2 border-yellow-500/50 rounded-lg 
+        group/icon relative w-10 h-10 ml-4 mb-3 bg-gray-900 border-2 border-yellow-500/50 rounded-lg 
         cursor-help hover:border-yellow-400 hover:shadow-[0_0_15px_rgba(234,179,8,0.4)]
         transition-all duration-500 ease-out transform
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8 pointer-events-none'}
@@ -122,7 +122,7 @@ const ActiveSlot = ({
     return (
         <div
             className={`
-        group/icon relative w-16 h-16 ml-4 mb-3 bg-gray-800 border-2 border-blue-500/30 rounded-lg 
+        group/icon relative w-10 h-10 ml-4 mb-3 bg-gray-800 border-2 border-blue-500/30 rounded-lg 
         cursor-help hover:border-blue-400 hover:shadow-[0_0_10px_rgba(59,130,246,0.5)]
         transition-all duration-500 ease-out transform
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8 pointer-events-none'}
@@ -261,7 +261,7 @@ export const UnitCard: React.FC<UnitCardProps> = ({
 
             {/* 2. THE SIDEBAR (Absolute positioned relative to the flex container) */}
             {/* We use 'absolute' logic or negative margins to make it overlap neighbors if needed */}
-            <div className="absolute left-68 top-4 flex flex-col pointer-events-none">
+            <div className="absolute left-full pl-4 top-4 flex flex-col pointer-events-none">
                 {/* We enable pointer-events only on the children so clicking "through" the gap works */}
                 <div className="pointer-events-auto">
                     <PassiveGroupSlot
