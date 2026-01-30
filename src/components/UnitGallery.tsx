@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '../supabaseClient';
 import type { Unit, Rarity } from '../types';
 import { UnitCard } from './UnitCard';
-import { adminEmails } from '../constants';
+import { isAdmin } from '../constants';
 
 const RARITY_WEIGHTS: Record<string, number> = {
     Vanguard: 7,
@@ -24,8 +24,6 @@ const RARITY_COLORS: Record<string, string> = {
     Epic: 'linear-gradient(150deg, #b20eff 10%, #3e00d4, #ae04ff 80%)',
     Rare: 'linear-gradient(150deg, #08f3ff 10%, #2747d3, #03c6ff)',
 };
-
-const ADMIN_EMAILS = adminEmails;
 
 export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Unit) => void }) => {
     const [units, setUnits] = useState<Unit[]>([]);
@@ -130,7 +128,7 @@ export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Uni
     const canEdit = (unitUserId: string) => {
         if (!session?.user) return false;
         if (session.user.id === unitUserId) return true;
-        if (session.user.email && ADMIN_EMAILS.includes(session.user.email)) return true;
+        if (session.user.email && isAdmin(session)) return true;
 
         return false;
     }
