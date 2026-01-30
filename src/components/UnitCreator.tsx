@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { ActiveAbility, PassiveAbility, Rarity, Unit } from '../types';
 import { supabase } from '../supabaseClient';
 import { UnitCard } from './UnitCard';
@@ -17,6 +17,9 @@ export const UnitCreator: React.FC<Props> = ({
     unitToEdit,
     onCancelEdit,
 }) => {
+    // --- FILE INPUT REF ---
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     // --- BASIC INFO STATE ---
     const [name, setName] = useState('');
     const [rarity, setRarity] = useState<Rarity>('Mythic');
@@ -156,7 +159,13 @@ export const UnitCreator: React.FC<Props> = ({
         setCategory('');
         setPassives([]);
         setActives([]);
+
         setMainImage(null);
+        setMainPreview('https://placehold.co/300x300');
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = 'https://placehold.co/300x300';
+        }
     };
 
     return (
