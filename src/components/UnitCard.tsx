@@ -54,7 +54,7 @@ const PassiveGroupSlot = ({
     return (
         <div
             className={`
-        group/icon relative w-12 h-12 ml-4 mb-3 bg-gray-900 border-2 border-yellow-500/50 rounded-lg 
+        group/icon relative w-16 h-16 ml-4 mb-3 bg-gray-900 border-2 border-yellow-500/50 rounded-lg 
         cursor-help hover:border-yellow-400 hover:shadow-[0_0_15px_rgba(234,179,8,0.4)]
         transition-all duration-500 ease-out transform
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8 pointer-events-none'}
@@ -191,7 +191,7 @@ export const UnitCard: React.FC<UnitCardProps> = ({
                     {/* --- CARD IMAGE BOX --- */}
                     <div
                         className={`
-                            relative w-64 h-64 shrink-0 
+                            relative w-50 h-50 shrink-0 
                             transition-transform duration-500 ease-out mb-3
                             ${isSelected ? 'scale-105' : 'group-hover/card:scale-[1.02]'}
                         `}

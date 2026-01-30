@@ -169,6 +169,7 @@ export const ActiveEditor: React.FC<Props> = ({ actives, setActives }) => {
                         </div>
                         <div className="flex gap-1">
                             <button
+                                type="button"
                                 onClick={() => startEditing(i)}
                                 className="text-gray-500 hover:text-blue-400 p-1"
                             >
@@ -177,6 +178,7 @@ export const ActiveEditor: React.FC<Props> = ({ actives, setActives }) => {
                                 </svg>
                             </button>
                             <button
+                                type="button"
                                 onClick={() => handleRemove(i)}
                                 className="text-gray-500 hover:text-red-500 p-1"
                             >
