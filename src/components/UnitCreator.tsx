@@ -44,7 +44,7 @@ export const UnitCreator: React.FC<Props> = ({
         if (unitToEdit) {
             setName(unitToEdit.name);
             setRarity(unitToEdit.rarity);
-            setCategory(unitToEdit.category || 'Uncategorized');
+            setCategory(unitToEdit.category || '');
             setPassives(unitToEdit.passives || []);
             setActives(unitToEdit.actives || []);
             if (unitToEdit.imageUrl) setMainPreview(unitToEdit.imageUrl);
@@ -153,7 +153,7 @@ export const UnitCreator: React.FC<Props> = ({
     const resetForm = () => {
         setName('');
         setRarity('Mythic');
-        setCategory('Uncategorized');
+        setCategory('');
         setPassives([]);
         setActives([]);
         setMainImage(null);
