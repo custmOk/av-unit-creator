@@ -132,12 +132,14 @@ const PassiveGroupSlot = ({
             </div>
 
             {/* --- THE POP-OUT LIST --- */}
-            <div className="absolute left-full top-0 ml-3 w-72 bg-gray-900 border border-yellow-600/30 rounded-md p-4 opacity-0 group-hover/icon:opacity-100 transition-opacity z-50 pointer-events-none shadow-xl">
+            <div className="absolute left-full top-0 ml-3 w-72 bg-gray-900 border
+                border-yellow-600/30 rounded-md p-4 opacity-0 group-hover/icon:opacity-100
+                transition-opacity z-50 pointer-events-none shadow-xl">
                 <h4 className="font-bold text-yellow-500 text-sm uppercase tracking-wider mb-3 border-b border-gray-700 pb-2">
                     Passive Traits
                 </h4>
 
-                <ul className="space-y-4 max-h-75 overflow-y-auto custom-scrollbar">
+                <ul className="space-y-4 max-h-none overflow-y-auto custom-scrollbar">
                     {passives.map((p, i) => (
                         <li key={i} className="flex flex-col gap-1">
                             <span className="font-bold text-white text-sm">
