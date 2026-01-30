@@ -161,10 +161,10 @@ export const UnitCreator: React.FC<Props> = ({
         setActives([]);
 
         setMainImage(null);
-        setMainPreview('https://placehold.co/300x300');
+        setMainPreview('');
 
         if (fileInputRef.current) {
-            fileInputRef.current.value = 'https://placehold.co/300x300';
+            fileInputRef.current.value = '';
         }
     };
 
