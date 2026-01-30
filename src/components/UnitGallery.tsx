@@ -243,11 +243,10 @@ export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Uni
                                                         // Optional: Scroll to top
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                                     }}
-                                                    className="absolute top-2 right-2 z-50 bg-blue-600 hover:bg-blue-500 text-white
-                                                    p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all"
+                                                    className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-full shadow-lg"
+                                                    title="Edit Unit"
                                                 >
-                                                    {/* Edit Pencil Icon */}
-                                                    ✏️
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                                                 </button>
 
                                                 {/* Delete Button */}
@@ -263,7 +262,7 @@ export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Uni
                                                     className="bg-red-600 hover:bg-red-500 text-white p-2 rounded-full shadow-lg"
                                                     title="Delete Unit"
                                                 >
-                                                    🗑️
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                                 </button>
                                             </div>
                                         )}
