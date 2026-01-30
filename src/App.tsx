@@ -36,7 +36,7 @@ function App() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-950 text-gray-100 p-8">
+        <div className="min-h-screen bg-gray-950 text-gray-100 p-10">
             {/* HEADER with Sign Out */}
             <header className="flex justify-between items-center mb-10">
                 <h1 className="text-3xl font-bold">Unit Database</h1>
