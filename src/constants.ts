@@ -1,5 +1,5 @@
-const adminEmails: string[] = import.meta.env.VITE_ADMIN_EMAILS?.split(',') || [];
+const adminEmail: string = import.meta.env.VITE_ADMIN_EMAIL || '';
 
 export const isAdmin = (session: any) => {
-    return adminEmails.includes(session?.user?.email);
+    return session?.user?.email === adminEmail;
 };
