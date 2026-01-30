@@ -32,7 +32,7 @@ export const RichTextParser: React.FC<{ text: string }> = ({ text }) => {
                 style={{ color: color }}
                 className="font-bold drop-shadow-sm filter brightness-110"
             >
-                {content}
+                <NumberParser text={content} />
             </span>
         );
 
