@@ -229,11 +229,11 @@ export const UnitCard: React.FC<UnitCardProps> = ({
                         </div>
                     </div>
 
-                    {/* --- UNIT NAME (Now Transforms!) --- */}
+                    {/* --- UNIT NAME --- */}
                     {/* Added 'transition-transform' and 'group-hover:translate-x-2' */}
                     <div
                         className={`
-                    w-64 text-left pl-1 
+                    w-50 text-left pl-1 
                     transition-transform duration-300 
                     ${isSelected ? 'translate-y-2' : 'group-hover/card:translate-y-1'}
                     `}

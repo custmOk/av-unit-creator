@@ -216,7 +216,7 @@ export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Uni
                                     }
                                     `}
                             >
-                                <div className="flex flex-wrap gap-16 justify-center items-start p-4">
+                                <div className="flex flex-wrap gap-8 justify-center items-start p-4">
                                     {group.units.map((unit) => (
 
                                         <div className="relative group">
