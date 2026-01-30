@@ -234,7 +234,7 @@ export const UnitGallery = ({ session, onEdit }: { session: any, onEdit: (u: Uni
                                         />
 
                                         {canEdit(unit.userId) && (
-                                            <div className="absolute top-2 right-2 z-50 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                            <div className="absolute top-1 right-1 z-50 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-all">
                                                 {/* Edit Button */}
                                                 <button
                                                     onClick={(e) => {
